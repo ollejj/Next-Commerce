@@ -8,7 +8,7 @@ export const Header = () => {
   const { items } = useCartContext();
 
   return (
-    <header className="bg-feldgrau h-32 flex flex-row items-center justify-between px-24 text-white">
+    <header className="bg-feldgrau h-32 w-screen flex flex-row items-center justify-between px-24 text-white">
       <div>
         <h1 className="text-5xl">Next Commerce</h1>
       </div>

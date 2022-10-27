@@ -9,6 +9,7 @@ module.exports = {
       colors: {
         feldgrau: "#425F57",
         oxley: "#749F82",
+        gsapple: "#A8E890",
       },
     },
   },
