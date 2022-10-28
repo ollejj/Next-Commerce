@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { useCartContext } from "../contexts/CartContext";
 
 export const ProductCard = ({
@@ -46,7 +45,7 @@ export const ProductCard = ({
           <p className="text-red-500">{price - discount}:-</p>
         </div>
       ) : (
-        <p>{price}</p>
+        <p>{price}:-</p>
       )}
       <p className="">{truncateText(desc)}</p>
       <div className="flex flex-col gap-y-1.5">

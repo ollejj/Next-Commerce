@@ -11,9 +11,9 @@ export const Products = () => {
   if (error) return "An error has occurred: " + error.message;
 
   return (
-    <div className="w-3/4  grid grid-cols-3 xl:grid-cols-4 gap-8 m-auto py-8">
+    <div className="w-3/4 grid grid-cols-3 xl:grid-cols-4 gap-8 m-auto py-8">
       {data.map((e) => {
-        return <ProductCard {...e} />;
+        return <ProductCard key={e.id} {...e} />;
       })}
     </div>
   );

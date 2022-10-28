@@ -11,6 +11,10 @@ module.exports = {
         oxley: "#749F82",
         gsapple: "#A8E890",
       },
+      boxShadow: {
+        "inner-custom":
+          "inset 4px 4px 8px #00000022, inset -4px -4px 8px #00000022",
+      },
     },
   },
   plugins: [],

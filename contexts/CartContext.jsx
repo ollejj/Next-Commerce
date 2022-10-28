@@ -7,8 +7,13 @@ export const useCartContext = () => useContext(CartContext);
 export const CartContextProvider = ({ children }) => {
   const [items, setItems] = useState([]);
 
+  const cost = items.reduce((acc, curr) => {
+    if (curr.discount) return (acc += curr.price - curr.discount);
+    return (acc += curr.price);
+  }, 0);
+
   return (
-    <CartContext.Provider value={{ items, setItems }}>
+    <CartContext.Provider value={{ items, setItems, cost }}>
       {children}
     </CartContext.Provider>
   );
