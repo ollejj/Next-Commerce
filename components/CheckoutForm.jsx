@@ -1,27 +1,31 @@
-import React, { useState, useEffect } from "react";
-import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
-import { useCartContext } from "../contexts/CartContext";
-import { useQuery, useMutation } from "react-query";
-import { convertToDecimal } from "../util/utils";
+import React, { useState, useEffect } from 'react';
+import {
+  CardElement,
+  useStripe,
+  useElements,
+  CardNumberElement,
+  CardCvcElement,
+  CardExpiryElement,
+} from '@stripe/react-stripe-js';
+import { useQuery, useMutation } from 'react-query';
+import { convertToDecimal } from '../util/utils';
 
-export default function CheckoutForm() {
+export const CheckoutForm = ({ cost }) => {
   const [succeeded, setSucceeded] = useState(false);
-  const [payError, setPayError] = useState(null);
-  const [processing, setProcessing] = useState("");
+  const [error, setError] = useState(null);
+  const [processing, setProcessing] = useState('');
   const [disabled, setDisabled] = useState(true);
-  const [clientSecret, setClientSecret] = useState("");
-
-  const { cost, items } = useCartContext();
+  const [clientSecret, setClientSecret] = useState('');
 
   const stripe = useStripe();
   const elements = useElements();
 
   const { mutate, isLoading } = useMutation(
     async (cost) => {
-      const res = await fetch("/api/checkout", {
-        method: "POST",
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ cost }),
       });
@@ -36,53 +40,53 @@ export default function CheckoutForm() {
 
   useEffect(() => {
     mutate(cost);
-  }, []);
+  }, [mutate, cost]);
 
-  const handleChange = async (e) => {
-    setDisabled(e.empty);
-    setPayError(e.error ? e.error.message : "");
+  const handleChange = async (event) => {
+    setDisabled(event.empty);
+    setError(event.error ? event.error.message : '');
   };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (ev) => {
+    ev.preventDefault();
     setProcessing(true);
-
+    // 5️⃣ Confirm Card Payment.
     const payload = await stripe.confirmCardPayment(clientSecret, {
       payment_method: {
         card: elements.getElement(CardElement),
       },
     });
-
     if (payload.error) {
-      setPayError(`Payment failed ${payload.error.message}`);
+      setError(`Payment failed ${payload.error.message}`);
       setProcessing(false);
     } else {
-      setPayError(null);
+      setError(null);
       setProcessing(false);
       setSucceeded(true);
     }
   };
 
-  return (
-    <form onSubmit={handleSubmit} className="flex flex-row items-center">
-      <CardElement onChange={handleChange} className="w-full border-2 h-12" />
-      {items.length > 0 && (
-        <>
-          <button className="mt-auto w-60 ml-auto px-8 bg-oxley h-12 text-white font-bold">
-            Checkout {convertToDecimal(cost)}:-
-          </button>
-        </>
-      )}
+  if (succeeded) return 'Thank you!';
 
-      {payError && (
-        <div className="card-error" role="alert">
-          {payError}
+  return (
+    <form className='' onSubmit={handleSubmit}>
+      {/* <CardElement id='card-element' options={{}} onChange={handleChange} /> */}
+      <CardElement />
+      <button
+        className='mt-auto ml-auto px-8 bg-oxley h-12 text-white font-bold'
+        id='submit'
+      >
+        {processing ? (
+          <p>Processing...</p>
+        ) : (
+          <p>Checkout {convertToDecimal(cost)}:-</p>
+        )}
+      </button>
+
+      {error && (
+        <div className='card-error' role='alert'>
+          {error}
         </div>
       )}
-
-      <p className={succeeded ? "result-message" : "result-message hidden"}>
-        Payment succeeded!
-      </p>
     </form>
   );
-}
+};
