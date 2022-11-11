@@ -10,24 +10,6 @@ export const CheckoutItem = ({
   specs,
   qty,
 }) => {
-  //   const handleClick = (e) => {
-  //     e.preventDefault();
-
-  //     setItems([
-  //       {
-  //         id,
-  //         image,
-  //         price,
-  //         rating,
-  //         desc,
-  //         discount,
-  //         title,
-  //         specs,
-  //       },
-  //       ...items,
-  //     ]);
-  //   };
-
   return (
     <div className='w-full flex flex-row items-center shadow-xl px-8 py-4 gap-12 rounded-xl'>
       <img className='w-1/5' src={image} alt='prod_img' />

@@ -9,9 +9,9 @@ import {
 } from '@stripe/react-stripe-js';
 import { useQuery, useMutation } from 'react-query';
 import { convertToDecimal } from '../util/utils';
+import { useCartContext } from '../contexts/CartContext';
 
 export const CheckoutForm = ({ cost }) => {
-  const [succeeded, setSucceeded] = useState(false);
   const [error, setError] = useState(null);
   const [processing, setProcessing] = useState('');
   const [disabled, setDisabled] = useState(true);
@@ -19,6 +19,7 @@ export const CheckoutForm = ({ cost }) => {
 
   const stripe = useStripe();
   const elements = useElements();
+  const { setItems, isPayed, setIsPayed } = useCartContext();
 
   const { mutate, isLoading } = useMutation(
     async (cost) => {
@@ -39,33 +40,35 @@ export const CheckoutForm = ({ cost }) => {
   );
 
   useEffect(() => {
+    setIsPayed(false);
     mutate(cost);
-  }, [mutate, cost]);
+  }, [mutate, cost, setIsPayed]);
 
   const handleChange = async (event) => {
     setDisabled(event.empty);
     setError(event.error ? event.error.message : '');
   };
+
   const handleSubmit = async (ev) => {
     ev.preventDefault();
     setProcessing(true);
-    // 5️⃣ Confirm Card Payment.
+
     const payload = await stripe.confirmCardPayment(clientSecret, {
       payment_method: {
         card: elements.getElement(CardElement),
       },
     });
+
     if (payload.error) {
       setError(`Payment failed ${payload.error.message}`);
       setProcessing(false);
     } else {
+      setItems([]);
+      setIsPayed(true);
       setError(null);
       setProcessing(false);
-      setSucceeded(true);
     }
   };
-
-  if (succeeded) return 'Thank you!';
 
   return (
     <form className='' onSubmit={handleSubmit}>
